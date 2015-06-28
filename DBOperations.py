@@ -13,6 +13,7 @@ import DBManage
 import UserInfoBean
 from UserInfoBean import *
 from DBManage import *
+import time
 
 class DBOperations(object):
     
@@ -43,8 +44,11 @@ class DBOperations(object):
         userInfo = cur.fetchone()
         dbManage.DBClose()
         PrintInfo('用户名%s获取成功'%jz_name)
-        userBean = UserInfoBean(userInfo)
-        return userBean
+        if (userInfo != None):
+            userBean = UserInfoBean(userInfo)
+            return userBean
+        else:
+            return None
         
     @staticmethod    
     def getUserInfoByMobile(jz_mobile):
@@ -57,8 +61,11 @@ class DBOperations(object):
         userInfo = cur.fetchone()
         dbManage.DBClose()
         PrintInfo('手机号%s获取成功'%jz_mobile)
-        userBean = UserInfoBean(userInfo)
-        return userBean
+        if (userInfo != None):
+            userBean = UserInfoBean(userInfo)
+            return userBean
+        else:
+            return None
 
     
     
@@ -69,12 +76,15 @@ class DBOperations(object):
         dbManage = DBManage.GetInstance()
         dbManage.DBConnect()
         cur = dbManage.connect.cursor()
-        cur.execute('SELECT * FROM jz_users WHERE jz_mobile = "%s"'%jz_NO)
+        cur.execute('SELECT * FROM jz_users WHERE jz_NO = "%s"'%jz_NO)
         userInfo = cur.fetchone()
         dbManage.DBClose()
         PrintInfo('会员号%s获取成功'%jz_NO)
-        userBean = UserInfoBean(userInfo)
-        return userBean
+        if (userInfo != None):
+            userBean = UserInfoBean(userInfo)
+            return userBean
+        else:
+            return None
     
     @staticmethod
     def addOneTransaction(jz_id, pro_id, amount):
@@ -98,7 +108,14 @@ class DBOperations(object):
                       WHERE jz_id = %d'%(amount, jz_id))
         
         dbManage.connect.commit()
+        
+        cur.execute('SELECT max(tran_id) FROM jz_pro_trans WHERE jz_id = %d'%jz_id)
+        tranId = cur.fetchone()
         dbManage.DBClose()
+        if (len(tranId) > 0):
+            return tranId[0]
+        else:
+            return 0
         PrintInfo('用户%d插入消费信息成功'%jz_id) 
     
     
@@ -108,7 +125,7 @@ class DBOperations(object):
         dbManage = DBManage.GetInstance()
         dbManage.DBConnect()
         cur = dbManage.connect.cursor()
-        cur.execute('SELECT * FROM jz_programs')
+        cur.execute('SELECT pro_id, pro_name FROM jz_programs')
         programs = cur.fetchall()
         dbManage.DBClose()
         PrintInfo('获取所有的消费项目成功')
