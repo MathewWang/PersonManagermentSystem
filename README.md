@@ -13,3 +13,7 @@ GUI : TKinder
 
 Database: Sqlite3
 
+# Screenshot
+
+ ![image](https://github.com/MathewWang/PersonManagermentSystem/blob/master/snapshot.jpg)
+
